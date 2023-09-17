@@ -15,7 +15,7 @@ dotenv.config();
 const uploadMiddleware = multer({ dest: "uploads/" });
 const salt = bcrypt.genSaltSync(10);
 
-app.use(cors({ credentials: true, origin: true }));
+app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
 app.use("/api/uploads", express.static(__dirname + "/uploads"));
