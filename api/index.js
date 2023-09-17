@@ -24,6 +24,10 @@ mongoose.connect(
   `mongodb+srv://blog-owner:${process.env.DB_PASSWORD}@cluster0.dzqa4l9.mongodb.net/?retryWrites=true&w=majority`
 );
 
+app.get("/", (req, res) => {
+  res.send("hello world");
+});
+
 app.post("/api/login", async (req, res) => {
   const { username, password } = req.body;
   const userDoc = await User.findOne({ username });
