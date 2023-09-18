@@ -50,9 +50,13 @@ const Header = () => {
               >
                 {username}
               </Link>
-              <p className="font-bold" onClick={handleLogout}>
+              <div
+                className="font-bold"
+                onClick={handleLogout}
+                style={{ cursor: "pointer" }}
+              >
                 Logout
-              </p>
+              </div>
             </>
           )}
 
