@@ -15,8 +15,7 @@ const CreatePost = () => {
     data.set("title", title);
     data.set("summary", summary);
     data.set("content", content);
-    if (files?.[0]) data.set("file", files?.[0]);
-    console.log(files);
+    data.set("file", files);
     e.preventDefault();
     const response = await fetch(`${process.env.REACT_APP_API_URL}/post`, {
       method: "POST",
@@ -35,6 +34,26 @@ const CreatePost = () => {
       </div>
     );
   }
+
+  function convertToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(file);
+      fileReader.onload = () => {
+        resolve(fileReader.result);
+      };
+      fileReader.onerror = (error) => {
+        reject(error);
+      };
+    });
+  }
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    const base64 = await convertToBase64(file);
+    setFiles(base64);
+  };
+
   return (
     <div>
       <h1 className="font-bold text-3xl text-center p-5 mb-10">
@@ -76,7 +95,7 @@ const CreatePost = () => {
           id="photo"
           type="file"
           accept="image/*"
-          onChange={(e) => setFiles(e.target.files)}
+          onChange={(e) => handleFileUpload(e)}
           required
         />
         <div className="mt-1 text-sm text-gray-500 " id="photo_help">

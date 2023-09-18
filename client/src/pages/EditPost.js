@@ -28,7 +28,7 @@ export const EditPost = () => {
     data.set("summary", summary);
     data.set("content", content);
     data.set("id", id);
-    if (files?.[0]) data.set("file", files?.[0]);
+    data.set("file", files);
     const res = await fetch(`${process.env.REACT_APP_API_URL}/post`, {
       method: "PUT",
       body: data,
@@ -40,6 +40,25 @@ export const EditPost = () => {
   if (redirect) {
     return <Navigate to={`/post/${id}`} />;
   }
+
+  function convertToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(file);
+      fileReader.onload = () => {
+        resolve(fileReader.result);
+      };
+      fileReader.onerror = (error) => {
+        reject(error);
+      };
+    });
+  }
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    const base64 = await convertToBase64(file);
+    setFiles(base64);
+  };
   return (
     <div>
       <div>
@@ -55,6 +74,7 @@ export const EditPost = () => {
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
               value={title}
               onChange={(e) => setTitle(e.target.value)}
+              required
             />
           </div>
           <div className="mb-6">
@@ -67,6 +87,7 @@ export const EditPost = () => {
               className="block w-full p-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-md focus:ring-blue-500 focus:border-blue-500 "
               value={summary}
               onChange={(e) => setSummary(e.target.value)}
+              required
             />
           </div>
           <label className="block mb-2 text-lg font-medium text-gray-900 ">
@@ -78,7 +99,8 @@ export const EditPost = () => {
             id="photo"
             type="file"
             accept="image/*"
-            onChange={(e) => setFiles(e.target.files)}
+            onChange={(e) => handleFileUpload(e)}
+            required
           />
           <div className="mt-1 text-sm text-gray-500 " id="photo_help">
             Photos can help to make your blog posts more visually appealing and

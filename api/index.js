@@ -7,18 +7,14 @@ const Post = require("./models/Post");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
-const multer = require("multer");
-const fs = require("fs");
 const dotenv = require("dotenv");
-
+const multer = require("multer");
 dotenv.config();
-const uploadMiddleware = multer({ dest: "uploads/" });
 const salt = bcrypt.genSaltSync(10);
-
+const uploadMiddleware = multer();
 app.use(cors({ credentials: true, origin: true }));
 app.use(express.json());
 app.use(cookieParser());
-app.use("/api/uploads", express.static(__dirname + "/uploads"));
 
 mongoose.connect(
   `mongodb+srv://blog-owner:${process.env.DB_PASSWORD}@cluster0.dzqa4l9.mongodb.net/?retryWrites=true&w=majority`
@@ -86,14 +82,13 @@ app.get("/api/post", async (req, res) => {
 });
 
 app.post("/api/post", uploadMiddleware.single("file"), async (req, res) => {
-  const { originalname, path } = req.file;
-  const parts = originalname.split(".");
-  const ext = parts[parts.length - 1];
-  const newPath = path + "." + ext;
-  fs.renameSync(path, newPath);
+  // const { originalname, path } = req.file;
+  // const parts = originalname.split(".");
+  // const ext = parts[parts.length - 1];
+  // const newPath = path + "." + ext;
+  // fs.renameSync(path, newPath);
 
-  const { title, content, summary } = req.body;
-
+  const { title, content, summary, file } = req.body;
   const { token } = req.cookies;
   jwt.verify(token, process.env.SECRET, {}, async (err, info) => {
     if (err) throw err;
@@ -102,7 +97,7 @@ app.post("/api/post", uploadMiddleware.single("file"), async (req, res) => {
         title,
         summary,
         content,
-        cover: newPath,
+        cover: file,
         author: info.id,
       });
       res.json({ postDoc });
@@ -111,19 +106,10 @@ app.post("/api/post", uploadMiddleware.single("file"), async (req, res) => {
 });
 
 app.put("/api/post", uploadMiddleware.single("file"), async (req, res) => {
-  let newPath = null;
-
-  if (req.file) {
-    const { originalname, path } = req.file;
-    const parts = originalname.split(".");
-    const ext = parts[parts.length - 1];
-    newPath = path + "." + ext;
-    fs.renameSync(path, newPath);
-  }
   const { token } = req.cookies;
   jwt.verify(token, process.env.SECRET, {}, async (err, info) => {
     if (err) throw err;
-    const { id, title, content, summary } = req.body;
+    const { id, title, content, summary, file } = req.body;
     const postDoc = await Post.findById(id);
     const check = JSON.stringify(postDoc.author) === JSON.stringify(info.id);
     if (!check) {
@@ -134,15 +120,8 @@ app.put("/api/post", uploadMiddleware.single("file"), async (req, res) => {
       title,
       summary,
       content,
-      cover: newPath ? newPath : postDoc.cover,
+      cover: file,
     });
-
-    if (newPath && postDoc.cover) {
-      fs.unlink(postDoc.cover, (err) => {
-        if (err) console.error(err);
-      });
-    }
-
     res.json({ postDoc });
   });
 });
@@ -159,7 +138,6 @@ app.delete("/api/delete/:postID", async (req, res) => {
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
-    fs.unlinkSync(post.cover);
     await Post.findByIdAndDelete(postID);
     res.json({ message: "Post deleted successfully" });
   } catch (error) {

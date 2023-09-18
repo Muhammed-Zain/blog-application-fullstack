@@ -65,7 +65,7 @@ const SinglePost = () => {
               >
                 <path
                   stroke="currentColor"
-                  strokeLineCap="round"
+                  strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth="2"
                   d="M1 5h12m0 0L9 1m4 4L9 9"
@@ -75,7 +75,7 @@ const SinglePost = () => {
           </Link>
           <button
             type="button"
-            class="text-red-500 hover:text-white border border-red-300 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-3xl text-sm px-5 py-2.5 text-center mr-2 mb-2 inline-flex items-center"
+            className="text-red-500 hover:text-white border border-red-300 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-3xl text-sm px-5 py-2.5 text-center mr-2 mb-2 inline-flex items-center"
             onClick={() => handleDelete(postInfo._id)}
           >
             Delete
@@ -95,7 +95,7 @@ const SinglePost = () => {
       )}
       <div className="image max-h-[250px] overflow-hidden flex mb-10">
         <img
-          src={`${process.env.REACT_APP_API_URL}/${postInfo.cover}`}
+          src={postInfo.cover}
           alt="blog_img"
           className="object-cover object-center"
         />
