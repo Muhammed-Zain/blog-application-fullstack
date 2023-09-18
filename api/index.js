@@ -12,7 +12,12 @@ const multer = require("multer");
 dotenv.config();
 const salt = bcrypt.genSaltSync(10);
 const uploadMiddleware = multer();
-app.use(cors({ credentials: true, origin: true }));
+app.use(
+  cors({
+    credentials: true,
+    origin: "https://blog-backend-woad.vercel.app/api",
+  })
+);
 app.use(express.json());
 app.use(cookieParser());
 
