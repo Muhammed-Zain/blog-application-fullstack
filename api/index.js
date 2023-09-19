@@ -71,7 +71,7 @@ app.get("/api/profile", (req, res, next) => {
   console.log(token);
   jwt.verify(token, process.env.SECRET, {}, (err, info) => {
     if (err) {
-      token = null;
+      req.body.userInfo = null;
       return next();
     }
     res.json(info);
