@@ -66,12 +66,16 @@ app.post("/api/register", async (req, res) => {
   }
 });
 
-app.get("/api/profile", (req, res) => {
+app.get("/api/profile", (req, res, next) => {
   const { token } = req.cookies;
   console.log(token);
   jwt.verify(token, process.env.SECRET, {}, (err, info) => {
-    if (err) throw err;
-    else res.json(info);
+    if (err) {
+      info = null;
+      return next();
+    }
+    res.json(info);
+    next();
   });
 });
 
