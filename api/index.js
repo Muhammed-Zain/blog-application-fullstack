@@ -45,6 +45,7 @@ app.post("/api/login", async (req, res) => {
             id: userDoc._id,
             username,
           });
+        console.log(token);
       }
     );
   } else {
@@ -67,6 +68,7 @@ app.post("/api/register", async (req, res) => {
 
 app.get("/api/profile", (req, res) => {
   const { token } = req.cookies;
+  console.log(token);
   jwt.verify(token, process.env.SECRET, {}, (err, info) => {
     if (err) throw err;
     else res.json(info);
@@ -95,6 +97,7 @@ app.post("/api/post", uploadMiddleware.single("file"), async (req, res) => {
 
   const { title, content, summary, file } = req.body;
   const { token } = req.cookies;
+  console.log(token);
   jwt.verify(token, process.env.SECRET, {}, async (err, info) => {
     if (err) throw err;
     else {
