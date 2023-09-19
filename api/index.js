@@ -15,7 +15,7 @@ const uploadMiddleware = multer();
 app.use(
   cors({
     credentials: true,
-    origin: "*",
+    origin: "https://blog-application-fullstack.vercel.app",
   })
 );
 app.use(express.json());
