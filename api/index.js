@@ -11,7 +11,7 @@ const dotenv = require("dotenv");
 const multer = require("multer");
 dotenv.config();
 const salt = bcrypt.genSaltSync(10);
-const maxSize = 1 * 1000 * 1000 * 100;
+const maxSize = 1 * 1000 * 1000 * 1000;
 const uploadMiddleware = multer({ limits: { fileSize: maxSize } });
 let refresh = null;
 app.use(
@@ -102,7 +102,7 @@ app.get("/api/post", async (req, res) => {
 
 app.post("/api/post", uploadMiddleware.single("file"), async (req, res) => {
   const { title, content, summary, file } = req.body;
-  const { token } = req.cookies;
+  let { token } = req.cookies;
   if (!token) token = refresh;
   console.log(token);
   jwt.verify(token, process.env.SECRET, {}, async (err, info) => {
