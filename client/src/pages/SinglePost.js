@@ -53,7 +53,7 @@ const SinglePost = () => {
           <Link to={`/edit/${postInfo._id}`}>
             <button
               type="button"
-              class="text-gray-900 hover:text-white border border-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-3xl text-sm px-5 py-2.5 text-center mr-2 mb-2 inline-flex items-center"
+              className="text-gray-900 hover:text-white border border-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-3xl text-sm px-5 py-2.5 text-center mr-2 mb-2 inline-flex items-center"
             >
               Edit
               <svg

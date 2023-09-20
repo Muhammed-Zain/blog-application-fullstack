@@ -11,7 +11,8 @@ const dotenv = require("dotenv");
 const multer = require("multer");
 dotenv.config();
 const salt = bcrypt.genSaltSync(10);
-const uploadMiddleware = multer();
+const maxSize = 1 * 1000 * 1000 * 100;
+const uploadMiddleware = multer({ limits: { fileSize: maxSize } });
 app.use(
   cors({
     credentials: true,
@@ -67,8 +68,13 @@ app.post("/api/register", async (req, res) => {
 });
 
 app.get("/api/profile", (req, res, next) => {
-  const token = req.cookies.token || "";
+  let { token } = req.cookies;
   console.log(token);
+  if (token == undefined) {
+    token = null;
+    console.log(token);
+  }
+
   jwt.verify(token, process.env.SECRET, {}, (err, info) => {
     if (err) {
       req.body.userInfo = null;
@@ -93,12 +99,6 @@ app.get("/api/post", async (req, res) => {
 });
 
 app.post("/api/post", uploadMiddleware.single("file"), async (req, res) => {
-  // const { originalname, path } = req.file;
-  // const parts = originalname.split(".");
-  // const ext = parts[parts.length - 1];
-  // const newPath = path + "." + ext;
-  // fs.renameSync(path, newPath);
-
   const { title, content, summary, file } = req.body;
   const { token } = req.cookies;
   console.log(token);
