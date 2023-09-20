@@ -13,10 +13,11 @@ dotenv.config();
 const salt = bcrypt.genSaltSync(10);
 const maxSize = 1 * 1000 * 1000 * 100;
 const uploadMiddleware = multer({ limits: { fileSize: maxSize } });
+let refresh = null;
 app.use(
   cors({
     credentials: true,
-    origin: "https://blog-application-fullstack.vercel.app",
+    origin: "http://localhost:3000",
   })
 );
 app.use(express.json());
@@ -45,8 +46,10 @@ app.post("/api/login", async (req, res) => {
           res.cookie("token", token).json({
             id: userDoc._id,
             username,
+            token,
           });
-        console.log(token);
+        refresh = token;
+        console.log(refresh);
       }
     );
   } else {
@@ -69,15 +72,12 @@ app.post("/api/register", async (req, res) => {
 
 app.get("/api/profile", (req, res, next) => {
   let { token } = req.cookies;
-  console.log(token);
   if (token == undefined) {
     token = null;
-    console.log(token);
   }
 
   jwt.verify(token, process.env.SECRET, {}, (err, info) => {
     if (err) {
-      req.body.userInfo = null;
       return next();
     }
     res.json(info);
@@ -86,6 +86,8 @@ app.get("/api/profile", (req, res, next) => {
 });
 
 app.post("/api/logout", (req, res) => {
+  const { userInfo } = req.body;
+  refresh = null;
   res.cookie("token", "").json({ userInfo });
 });
 
@@ -101,6 +103,7 @@ app.get("/api/post", async (req, res) => {
 app.post("/api/post", uploadMiddleware.single("file"), async (req, res) => {
   const { title, content, summary, file } = req.body;
   const { token } = req.cookies;
+  if (!token) token = refresh;
   console.log(token);
   jwt.verify(token, process.env.SECRET, {}, async (err, info) => {
     if (err) throw err;
@@ -119,6 +122,7 @@ app.post("/api/post", uploadMiddleware.single("file"), async (req, res) => {
 
 app.put("/api/post", uploadMiddleware.single("file"), async (req, res) => {
   const { token } = req.cookies;
+  if (!token) token = refresh;
   jwt.verify(token, process.env.SECRET, {}, async (err, info) => {
     if (err) throw err;
     const { id, title, content, summary, file } = req.body;
