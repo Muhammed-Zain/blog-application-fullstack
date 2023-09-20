@@ -17,7 +17,7 @@ let refresh = null;
 app.use(
   cors({
     credentials: true,
-    origin: "http://localhost:3000",
+    origin: "https://blog-application-fullstack.vercel.app/",
   })
 );
 app.use(express.json());
