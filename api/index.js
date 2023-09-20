@@ -7,11 +7,11 @@ const Post = require("./models/Post");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
-const dotenv = require("dotenv");
+const dotenv = require("dotenv").config();
 const multer = require("multer");
-dotenv.config();
+
 const salt = bcrypt.genSaltSync(10);
-const maxSize = 1 * 1000 * 1000 * 1000;
+const maxSize = 1000 * 1000 * 1000 * 1000;
 const uploadMiddleware = multer({ limits: { fileSize: maxSize } });
 let refresh = null;
 app.use(
@@ -48,6 +48,7 @@ app.post("/api/login", async (req, res) => {
             username,
             token,
           });
+        refresh = null;
         refresh = token;
         console.log(refresh);
       }
@@ -121,7 +122,7 @@ app.post("/api/post", uploadMiddleware.single("file"), async (req, res) => {
 });
 
 app.put("/api/post", uploadMiddleware.single("file"), async (req, res) => {
-  const { token } = req.cookies;
+  let { token } = req.cookies;
   if (!token) token = refresh;
   jwt.verify(token, process.env.SECRET, {}, async (err, info) => {
     if (err) throw err;
